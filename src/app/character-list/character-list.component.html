@@ -1,0 +1,38 @@
+<h1 class="mat-display-1">Character List</h1>
+<ng-container *ngIf="allPeople.length && allPeople.length === allResults">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 people-table">
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+    </ng-container>
+    <ng-container matColumnDef="birth_year">
+      <th mat-header-cell *matHeaderCellDef> Birth Year </th>
+      <td mat-cell *matCellDef="let element"> {{element.birth_year}} </td>
+    </ng-container>
+    <ng-container matColumnDef="gender">
+      <th mat-header-cell *matHeaderCellDef> Gender </th>
+      <td mat-cell *matCellDef="let element"> {{element.gender}} </td>
+    </ng-container>
+    <ng-container matColumnDef="height">
+      <th mat-header-cell *matHeaderCellDef> Height </th>
+      <td mat-cell *matCellDef="let element"> {{element.height}} </td>
+    </ng-container>
+    <ng-container matColumnDef="mass">
+      <th mat-header-cell *matHeaderCellDef> Mass </th>
+      <td mat-cell *matCellDef="let element"> {{element.mass}} </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</ng-container>
+<div [ngClass]="{'hidden': !allPeople.length || allPeople.length !== allResults }">
+  <mat-paginator  [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons></mat-paginator>
+</div>
+
+<small *ngIf="allPeople.length && allPeople.length === allResults">{{ allPeople | json }}</small>
+
+<mat-progress-spinner
+  *ngIf="allPeople.length !== allResults"
+  value="{{ 100 * allPeople.length / allResults }}">
+</mat-progress-spinner>
