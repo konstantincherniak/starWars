@@ -1,8 +1,63 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {EMPTY, Observable} from 'rxjs';
-import {expand} from 'rxjs/operators';
+import {expand, map} from 'rxjs/operators';
 
+
+export interface PeopleResponseApi {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Array<Character>;
+}
+
+export interface FilmsResponseApi {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Array<Film>;
+}
+
+export interface Character {
+  birth_year: string;
+  id?: string;
+  created: string;
+  edited: string;
+  eye_color: string;
+  films: Array<string>;
+  filmsIds?: Array<string>;
+  gender: string;
+  hair_color: string;
+  height: string;
+  homeworld: string;
+  mass: string;
+  name: string;
+  skin_color: string;
+  species: Array<string>;
+  speciesIds?: Array<string>;
+  starships: Array<string>;
+  url: string;
+  vehicles: Array<string>;
+}
+
+export interface Film {
+  id?: string;
+  title: string;
+  episode_id: string;
+  opening_crawl: string;
+  director: string;
+  producer: string;
+  release_date: string;
+  characters: Array<string>;
+  charactersIds: Array<string>;
+  planets: Array<string>;
+  starships: Array<string>;
+  vehicles: Array<string>;
+  species: Array<string>;
+  created: string;
+  edited: string;
+  url: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -12,15 +67,47 @@ export class ApiService {
   constructor(
     private http: HttpClient
   ) {}
-  public getPeople(page: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/people/?page=${page}`);
+  public getPeople(page: string): Observable<PeopleResponseApi> {
+    return this.http.get(`${this.apiUrl}/people/?page=${page}`).pipe(
+      map(
+        (characters: PeopleResponseApi) => ({...characters, results: characters.results.map(character => this.mapPerson(character))})
+      )
+    );
   }
-  public getAllPeople(): Observable<any> {
+
+  public getFilms(page: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/films/?page=${page}`).pipe(
+      map(
+        (films: FilmsResponseApi) => ({...films, results: films.results.map(film => this.mapFilm(film))})
+      )
+    );
+  }
+  public getAllPeople(): Observable<PeopleResponseApi> {
     return this.getPeople('1').pipe(
       expand(people => people.next ? this.getPeople(this.getNumberPage(people.next)) : EMPTY)
     );
   }
+  private mapPerson(character: Character): Character {
+    return {
+        ...character,
+        id: this.getIdInUrl(character.url, 'people'),
+        filmsIds: character.films.map(film => this.getIdInUrl(film, 'films')),
+        speciesIds: character.species.map(film => this.getIdInUrl(film, 'species'))
+    };
+  }
+  private mapFilm(film: Film): Film {
+    return {
+      ...film,
+      id: this.getIdInUrl(film.url, 'films'),
+      charactersIds: film.characters.map(character => this.getIdInUrl(character, 'people'))
+    };
+  }
   private getNumberPage(url: string): string {
     return new URL(url).searchParams.get('page');
+  }
+  private getIdInUrl(url: string, name: string): string {
+    const segments = url.split('/');
+    const index = segments.indexOf(name);
+    return segments[index + 1];
   }
 }

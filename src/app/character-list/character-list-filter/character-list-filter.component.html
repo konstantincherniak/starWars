@@ -1,0 +1,15 @@
+<h2>Filter</h2>
+<form
+  [formGroup]="filterForm"
+  (onSubmit)="filterPeople()"
+  #form
+>
+  <mat-form-field>
+    <mat-label>Select Movie</mat-label>
+    <mat-select formControlName="films" name="films">
+      <mat-option *ngFor="let film of films" [value]="film.value">
+        {{film.viewValue}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</form>
