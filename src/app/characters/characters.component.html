@@ -1,1 +1,25 @@
-<p>characters works!</p>
+<mat-card *ngIf="showCard">
+  <mat-card-title>{{characterCard?.name}}</mat-card-title>
+  <mat-card-content>
+    <dl class="dl-horizontal">
+      <dt>Name</dt>
+      <dd>{{characterCard.name}}</dd>
+      <dt>Species</dt>
+      <dd *ngFor="let specie of characterCard.speciesNames">{{specie}}</dd>
+
+      <dt>Movies</dt>
+      <dd *ngFor="let film of characterCard.filmsNames">{{film}}</dd>
+      <dt>Spaceships</dt>
+      <dd *ngFor="let starship of characterCard.starshipsNames">{{starship}}</dd>
+    </dl>
+  </mat-card-content>
+  <mat-card-actions>
+    <button (click)="back()" mat-button [color]="'success'">
+      <mat-icon aria-hidden="false" aria-label="Example home icon">chevron_left</mat-icon> Back to list
+    </button>
+  </mat-card-actions>
+</mat-card>
+
+<div class="spinner-wrapper" *ngIf="!showCard">
+  <mat-spinner mode="indeterminate"></mat-spinner>
+</div>

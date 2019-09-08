@@ -1,25 +1,29 @@
-<h2>Filter</h2>
-<form [formGroup]="filterForm">
-  <div class="field">
-    <mat-form-field>
-      <mat-label>Select Movie</mat-label>
-      <mat-select formControlName="films" name="films">
-        <mat-option>None</mat-option>
-        <mat-option *ngFor="let film of films" [value]="film.value">
-          {{film.viewValue}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
-  <div class="field">
-    <mat-form-field>
-      <mat-label>Select Species</mat-label>
-      <mat-select formControlName="species" name="species">
-        <mat-option>None</mat-option>
-        <mat-option *ngFor="let specie of species" [value]="specie.value">
-          {{specie.viewValue}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
-</form>
+<div class="form">
+  <form [formGroup]="filterForm">
+    <div class="field">
+      <h3>Filter: </h3>
+    </div>
+    <div class="field">
+      <mat-form-field>
+        <mat-label>Select Movie</mat-label>
+        <mat-select formControlName="films" name="films">
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let film of films" [value]="film.value">
+            {{film.viewValue}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="field">
+      <mat-form-field>
+        <mat-label>Select Species</mat-label>
+        <mat-select formControlName="species" name="species">
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let specie of species" [value]="specie.value">
+            {{specie.viewValue}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </form>
+</div>

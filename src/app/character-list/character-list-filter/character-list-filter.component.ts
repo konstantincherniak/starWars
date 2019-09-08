@@ -1,8 +1,8 @@
-import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {Film, Species} from '../character-list.interfaces';
-import {ApiService} from '../../shared/sevices/api.service';
 import {Subscription} from 'rxjs';
+import {ApiService} from '../../shared/sevices/api.service';
+import {FilmSelect, SpeciesSelect} from '../character-list.interfaces';
 
 @Component({
   selector: 'app-character-list-filter',
@@ -10,11 +10,11 @@ import {Subscription} from 'rxjs';
   styleUrls: ['./character-list-filter.component.scss']
 })
 export class CharacterListFilterComponent implements OnInit, OnDestroy {
-  @Output('filterChanged') filterChanged = new EventEmitter();
+  @Input() species: SpeciesSelect[] = [];
+  @Input() films: FilmSelect[] = [];
+  @Output() filterChanged = new EventEmitter();
   private filterChangeSubscription: Subscription;
   private filterForm: FormGroup;
-  private films: Film[] = [];
-  private species: Species[] = [];
   constructor(
     private apiService: ApiService,
     private formBuilder: FormBuilder
@@ -26,12 +26,12 @@ export class CharacterListFilterComponent implements OnInit, OnDestroy {
       species: [],
       birthYear: []
     });
-    this.setFilmsSelect();
-    this.setSpeciesSelect();
+    /*this.setFilmsSelect();
+    this.setSpeciesSelect();*/
     this.filterChangeSubscription = this.filterForm.valueChanges
       .subscribe(next => this.filterChanged.next(next));
   }
-  private setFilmsSelect() {
+  /*private setFilmsSelect() {
     this.apiService.getFilms('1').subscribe(
       response => {
         this.films = this.films
@@ -46,10 +46,9 @@ export class CharacterListFilterComponent implements OnInit, OnDestroy {
         console.log('Complete loading films');
       }
     );
+  }*/
 
-  }
-
-  private setSpeciesSelect() {
+  /*private setSpeciesSelect() {
     this.apiService.getAllSpecies().subscribe(
       response => {
         this.species = this.species
@@ -65,7 +64,7 @@ export class CharacterListFilterComponent implements OnInit, OnDestroy {
       }
     );
 
-  }
+  }*/
 
   ngOnDestroy() {
     this.filterChangeSubscription.unsubscribe();

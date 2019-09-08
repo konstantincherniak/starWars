@@ -1,0 +1,18 @@
+h1 {
+  margin-bottom: 30px;
+}
+.people-table {
+  width: 100%;
+  tr {
+    &:hover{
+      background: #eeeeee;
+    }
+    td {
+      cursor: pointer;
+    }
+  }
+}
+
+.hidden {
+  display: none;
+}

@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {EMPTY, Observable} from 'rxjs';
 import {expand, map} from 'rxjs/operators';
+import {Character, Film, Species, Starship} from '../../character-list/character-list.interfaces';
 
 
 export interface PeopleResponseApi {
@@ -25,65 +26,11 @@ export interface SpeciesResponseApi {
   results: Array<Species>;
 }
 
-export interface Species {
-  id?: string;
-  name: string;
-  classification: string;
-  designation: string;
-  average_height: string;
-  skin_colors: string;
-  hair_colors: string;
-  eye_colors: string;
-  average_lifespan: string;
-  homeworld: string;
-  language: string;
-  people: Array<string>;
-  peopleIds?: Array<string>;
-  films: Array<string>;
-  created: string;
-  edited: string;
-  url: string;
-}
-
-export interface Character {
-  birth_year: string;
-  id?: string;
-  created: string;
-  edited: string;
-  eye_color: string;
-  films: Array<string>;
-  filmsIds?: Array<string>;
-  gender: string;
-  hair_color: string;
-  height: string;
-  homeworld: string;
-  mass: string;
-  name: string;
-  skin_color: string;
-  species: Array<string>;
-  speciesIds?: Array<string>;
-  starships: Array<string>;
-  url: string;
-  vehicles: Array<string>;
-}
-
-export interface Film {
-  id?: string;
-  title: string;
-  episode_id: string;
-  opening_crawl: string;
-  director: string;
-  producer: string;
-  release_date: string;
-  characters: Array<string>;
-  charactersIds: Array<string>;
-  planets: Array<string>;
-  starships: Array<string>;
-  vehicles: Array<string>;
-  species: Array<string>;
-  created: string;
-  edited: string;
-  url: string;
+export interface StarshipsResponseApi {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Array<Starship>;
 }
 
 @Injectable({
@@ -102,6 +49,20 @@ export class ApiService {
     );
   }
 
+  public getCharacter(id: string): Observable<Character> {
+    return this.http.get(`${this.apiUrl}/people/${id}`).pipe(
+      map(
+        (character: Character) =>   this.mapPerson(character)
+      )
+    );
+  }
+
+  public getAllFilms(): Observable<any> {
+    return this.getFilms('1').pipe(
+      expand(films => films.next ? this.getFilms(this.getNumberPage(films.next)) : EMPTY)
+    );
+  }
+
   public getFilms(page: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/films/?page=${page}`).pipe(
       map(
@@ -115,6 +76,15 @@ export class ApiService {
       expand(species => species.next ? this.getSpecies(this.getNumberPage(species.next)) : EMPTY)
     );
   }
+
+  public getStarships(page: string): Observable<StarshipsResponseApi> {
+    return this.http.get(`${this.apiUrl}/starships/?page=${page}`).pipe(
+      map(
+        (starships: StarshipsResponseApi) => ({...starships, results: starships.results.map(starship => this.mapStarship(starship))})
+      )
+    );
+  }
+
   public getSpecies(page: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/species/?page=${page}`).pipe(
       map(
@@ -127,12 +97,18 @@ export class ApiService {
       expand(people => people.next ? this.getPeople(this.getNumberPage(people.next)) : EMPTY)
     );
   }
+  public getAllStarships(): Observable<StarshipsResponseApi> {
+    return this.getStarships('1').pipe(
+      expand(starships => starships.next ? this.getStarships(this.getNumberPage(starships.next)) : EMPTY)
+    );
+  }
   private mapPerson(character: Character): Character {
     return {
         ...character,
         id: this.getIdInUrl(character.url, 'people'),
         filmsIds: character.films.map(film => this.getIdInUrl(film, 'films')),
-        speciesIds: character.species.map(film => this.getIdInUrl(film, 'species'))
+        speciesIds: character.species.map(film => this.getIdInUrl(film, 'species')),
+        starshipsIds: character.starships.map(starship => this.getIdInUrl(starship, 'starships'))
     };
   }
   private mapFilm(film: Film): Film {
@@ -140,6 +116,12 @@ export class ApiService {
       ...film,
       id: this.getIdInUrl(film.url, 'films'),
       charactersIds: film.characters.map(character => this.getIdInUrl(character, 'people'))
+    };
+  }
+  private mapStarship(starship: Starship): Starship {
+    return {
+      ...starship,
+      id: this.getIdInUrl(starship.url, 'starships')
     };
   }
   private mapSpecies(species: Species): Species {

@@ -3,11 +3,18 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-.hidden {
-  display: none;
+.spinner-wrapper {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  margin-left: -50px;
 }
 
-.people-table {
-  width: 100%;
+.mat-success {
+  background-color: green;
+  color: #fff;
 }
 
+.page-wrapper {
+  margin: 40px 40px;
+}

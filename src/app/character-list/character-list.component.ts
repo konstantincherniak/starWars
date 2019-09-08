@@ -1,8 +1,10 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator, MatTableDataSource} from '@angular/material';
 
-import {ApiService, Character} from '../shared/sevices/api.service';
-import {FilterValues} from './character-list.interfaces';
+import {ApiService} from '../shared/sevices/api.service';
+
+import {Character, FilmSelect, FilterValues, PeopleData, SpeciesSelect} from './character-list.interfaces';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-list-character',
@@ -16,13 +18,18 @@ export class CharacterListComponent implements OnInit {
   private displayedColumns: string[] = ['name', 'birth_year', 'gender', 'height', 'mass'];
   private dataSource;
   private showTableData = false;
-
+  private species: SpeciesSelect[] = [];
+  private films: FilmSelect[] = [];
+  private peopleData: PeopleData;
   constructor(
-    private apiService: ApiService
+    private apiService: ApiService,
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.getAllPeople();
+    this.getFilms();
+    this.getSpecies();
   }
   private getAllPeople() {
     this.apiService.getAllPeople().subscribe(
@@ -43,6 +50,54 @@ export class CharacterListComponent implements OnInit {
     );
   }
 
+  private getFilms() {
+    this.apiService.getFilms('1').subscribe(
+      response => {
+        this.films = this.films
+          .concat(response.results
+            .map(film => ({value: film.id, viewValue: `Episode ${film.episode_id}: ${film.title}`}))
+          );
+      },
+      error => {
+        console.error('Error while getting films from API');
+      },
+      () => {
+        console.log('Complete loading films');
+      }
+    );
+  }
+
+  private getSpecies() {
+    this.apiService.getAllSpecies().subscribe(
+      response => {
+        this.species = this.species
+          .concat(response.results
+            .map(species => ({value: species.id, viewValue: species.name}))
+          );
+      },
+      error => {
+        console.error('Error while getting species from API');
+      },
+      () => {
+        console.log('Complete loading species');
+      }
+    );
+
+  }
+
+  private getStarships() {
+    this.apiService.getAllStarships().subscribe(
+      response => {
+      },
+      error => {
+        console.error('Error while getting Starships from API');
+      },
+      () => {
+        console.log('Complete loading Starships');
+      }
+    );
+
+  }
   private filterPeople(filterValues: FilterValues) {
     this.dataSource.filter = filterValues;
   }
@@ -51,5 +106,9 @@ export class CharacterListComponent implements OnInit {
     const filmsFilter = filter.films ? data.filmsIds.some(id => id === filter.films) : true;
     const speciesFilter = filter.species ? data.speciesIds.some(id => id === filter.species) : true;
     return filmsFilter && speciesFilter;
+  }
+
+  private openPersonCard(id: string) {
+    this.router.navigate(['characters', id]);
   }
 }
