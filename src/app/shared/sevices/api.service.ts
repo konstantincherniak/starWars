@@ -18,6 +18,33 @@ export interface FilmsResponseApi {
   results: Array<Film>;
 }
 
+export interface SpeciesResponseApi {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Array<Species>;
+}
+
+export interface Species {
+  id?: string;
+  name: string;
+  classification: string;
+  designation: string;
+  average_height: string;
+  skin_colors: string;
+  hair_colors: string;
+  eye_colors: string;
+  average_lifespan: string;
+  homeworld: string;
+  language: string;
+  people: Array<string>;
+  peopleIds?: Array<string>;
+  films: Array<string>;
+  created: string;
+  edited: string;
+  url: string;
+}
+
 export interface Character {
   birth_year: string;
   id?: string;
@@ -82,6 +109,19 @@ export class ApiService {
       )
     );
   }
+
+  public getAllSpecies(): Observable<SpeciesResponseApi> {
+    return this.getSpecies('1').pipe(
+      expand(species => species.next ? this.getSpecies(this.getNumberPage(species.next)) : EMPTY)
+    );
+  }
+  public getSpecies(page: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/species/?page=${page}`).pipe(
+      map(
+        (species: SpeciesResponseApi) => ({...species, results: species.results.map(specie => this.mapSpecies(specie))})
+      )
+    );
+  }
   public getAllPeople(): Observable<PeopleResponseApi> {
     return this.getPeople('1').pipe(
       expand(people => people.next ? this.getPeople(this.getNumberPage(people.next)) : EMPTY)
@@ -100,6 +140,13 @@ export class ApiService {
       ...film,
       id: this.getIdInUrl(film.url, 'films'),
       charactersIds: film.characters.map(character => this.getIdInUrl(character, 'people'))
+    };
+  }
+  private mapSpecies(species: Species): Species {
+    return {
+      ...species,
+      id: this.getIdInUrl(species.url, 'species'),
+      peopleIds: species.people.map(character => this.getIdInUrl(character, 'people'))
     };
   }
   private getNumberPage(url: string): string {

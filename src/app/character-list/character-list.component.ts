@@ -1,7 +1,8 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator, MatTableDataSource} from '@angular/material';
 
-import {ApiService} from '../shared/sevices/api.service';
+import {ApiService, Character} from '../shared/sevices/api.service';
+import {FilterValues} from './character-list.interfaces';
 
 @Component({
   selector: 'app-list-character',
@@ -36,8 +37,19 @@ export class CharacterListComponent implements OnInit {
         this.showTableData = this.allPeople.length && this.allPeople.length === this.allResults;
         this.dataSource = new MatTableDataSource<any>(this.allPeople);
         this.dataSource.paginator = this.paginator;
+        this.dataSource.filterPredicate = this.filterLogic;
         console.log('Complete loading people');
       }
     );
+  }
+
+  private filterPeople(filterValues: FilterValues) {
+    this.dataSource.filter = filterValues;
+  }
+
+  private filterLogic(data: Character, filter: FilterValues) {
+    const filmsFilter = filter.films ? data.filmsIds.some(id => id === filter.films) : true;
+    const speciesFilter = filter.species ? data.speciesIds.some(id => id === filter.species) : true;
+    return filmsFilter && speciesFilter;
   }
 }
