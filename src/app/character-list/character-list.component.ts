@@ -99,7 +99,6 @@ export class CharacterListComponent implements OnInit {
         ? -1 * filter.birthYear.beforeNumber : filter.birthYear.beforeNumber;
       const after = filter.birthYear.afterNumber && filter.birthYear.afterDay === 'BBY'
         ? -1 * filter.birthYear.afterNumber : filter.birthYear.afterNumber;
-      debugger
       birthdayFilter = (before && after && year < before && year > after)
         || (!before && after && year > after)
         || (before && !after && year < before) || (!before && !after);
