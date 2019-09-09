@@ -26,46 +26,9 @@ export class CharacterListFilterComponent implements OnInit, OnDestroy {
       species: [],
       birthYear: []
     });
-    /*this.setFilmsSelect();
-    this.setSpeciesSelect();*/
     this.filterChangeSubscription = this.filterForm.valueChanges
       .subscribe(next => this.filterChanged.next(next));
   }
-  /*private setFilmsSelect() {
-    this.apiService.getFilms('1').subscribe(
-      response => {
-        this.films = this.films
-          .concat(response.results
-            .map(film => ({value: film.id, viewValue: `Episode ${film.episode_id}: ${film.title}`}))
-          );
-      },
-      error => {
-        console.error('Error while getting films from API');
-      },
-      () => {
-        console.log('Complete loading films');
-      }
-    );
-  }*/
-
-  /*private setSpeciesSelect() {
-    this.apiService.getAllSpecies().subscribe(
-      response => {
-        this.species = this.species
-          .concat(response.results
-            .map(species => ({value: species.id, viewValue: species.name}))
-          );
-      },
-      error => {
-        console.error('Error while getting films from API');
-      },
-      () => {
-        console.log('Complete loading films');
-      }
-    );
-
-  }*/
-
   ngOnDestroy() {
     this.filterChangeSubscription.unsubscribe();
   }

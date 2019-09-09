@@ -35,6 +35,7 @@ export class CharactersComponent implements OnInit {
 
     combineLatest(getCharacter$, allSpecies$, allFilms$, allStarships$).subscribe(
       ([character, species, films, starships]) => {
+        console.log(species);
         this.showCard = true;
         this.characterCard = {
           id: character.id,
@@ -51,13 +52,10 @@ export class CharactersComponent implements OnInit {
       }
     );
   }
-
-
   private reducerForStreams(acc, val) {
     acc.results = acc.results.concat(val.results);
     return acc;
   }
-
   private back() {
     this.router.navigate(['/']);
   }

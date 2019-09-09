@@ -85,19 +85,6 @@ export class CharacterListComponent implements OnInit {
 
   }
 
-  private getStarships() {
-    this.apiService.getAllStarships().subscribe(
-      response => {
-      },
-      error => {
-        console.error('Error while getting Starships from API');
-      },
-      () => {
-        console.log('Complete loading Starships');
-      }
-    );
-
-  }
   private filterPeople(filterValues: FilterValues) {
     this.dataSource.filter = filterValues;
   }
