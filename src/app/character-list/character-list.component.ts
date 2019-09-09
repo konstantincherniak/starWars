@@ -44,7 +44,7 @@ export class CharacterListComponent implements OnInit {
         this.showTableData = this.allPeople.length && this.allPeople.length === this.allResults;
         this.dataSource = new MatTableDataSource<any>(this.allPeople);
         this.dataSource.paginator = this.paginator;
-        this.dataSource.filterPredicate = this.filterLogic;
+        this.dataSource.filterPredicate = this.filterLogic.bind(this);
         console.log('Complete loading people');
       }
     );
@@ -92,10 +92,28 @@ export class CharacterListComponent implements OnInit {
   private filterLogic(data: Character, filter: FilterValues) {
     const filmsFilter = filter.films ? data.filmsIds.some(id => id === filter.films) : true;
     const speciesFilter = filter.species ? data.speciesIds.some(id => id === filter.species) : true;
-    return filmsFilter && speciesFilter;
+    let birthdayFilter;
+    if (data.birth_year !== 'unknown') {
+      const year = this.convertStringToNumber(data.birth_year);
+      const before = filter.birthYear.beforeNumber && filter.birthYear.beforeDay === 'BBY'
+        ? -1 * filter.birthYear.beforeNumber : filter.birthYear.beforeNumber;
+      const after = filter.birthYear.afterNumber && filter.birthYear.afterDay === 'BBY'
+        ? -1 * filter.birthYear.afterNumber : filter.birthYear.afterNumber;
+      debugger
+      birthdayFilter = (before && after && year < before && year > after)
+        || (!before && after && year > after)
+        || (before && !after && year < before) || (!before && !after);
+    } else {
+      birthdayFilter = false;
+    }
+    return filmsFilter && speciesFilter && birthdayFilter;
   }
-
   private openPersonCard(id: string) {
     this.router.navigate(['characters', id]);
+  }
+  convertStringToNumber(date: string): number {
+    const day = date.substr(date.length - 3);
+    const year = parseInt(date.slice(0, -3), 10);
+    return day === 'BBY' ? -1 * year : year;
   }
 }

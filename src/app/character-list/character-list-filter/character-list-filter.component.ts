@@ -24,7 +24,12 @@ export class CharacterListFilterComponent implements OnInit, OnDestroy {
     this.filterForm = this.formBuilder.group({
       films: [],
       species: [],
-      birthYear: []
+      birthYear: this.formBuilder.group({
+        beforeDay: ['BBY'],
+        beforeNumber: [],
+        afterDay: ['BBY'],
+        afterNumber: []
+      })
     });
     this.filterChangeSubscription = this.filterForm.valueChanges
       .subscribe(next => this.filterChanged.next(next));

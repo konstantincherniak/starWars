@@ -10,7 +10,7 @@ export interface SpeciesSelect {
 
 export interface FilterValues {
   films: string | null;
-  birthYear: string | null;
+  birthYear: any | null;
   species: string | null;
 }
 
